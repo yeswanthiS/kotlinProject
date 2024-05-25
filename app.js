@@ -1,5 +1,4 @@
-require('dotenv').config(); // Load environment variables
-
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -7,8 +6,13 @@ const vehicleRoutes = require('./Routes/vehicle');
 
 const app = express();
 
-// Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI + '/' + process.env.DB_Name, {
+app.use(bodyParser.json());
+
+// Use the vehicle routes
+app.use('/api/vehicle', vehicleRoutes);
+
+const PORT = process.env.PORT || 3000;
+mongoose.connect(`${process.env.MONGODB_URI}/${process.env.DB_Name}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
@@ -16,15 +20,6 @@ mongoose.connect(process.env.MONGODB_URI + '/' + process.env.DB_Name, {
 }).catch(err => {
     console.error('Failed to connect to MongoDB Atlas', err);
 });
-
-// Middleware
-app.use(bodyParser.json());
-
-// Routes
-app.use('/api/vehicle', vehicleRoutes);
-
-// Start the server
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
